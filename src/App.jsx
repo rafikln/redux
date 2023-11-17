@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
-const Add = (props) => {
+
+const Add = () => {
   const [input, setinput] = useState("");
+  const props = useContext(Valeurr);
   return (
     <>
       <p className="one">Add New Friend</p>
@@ -35,8 +37,8 @@ const Add = (props) => {
             ]);
           } else {
             // setTimeout(() => {},2000)
-            toast.error("il exist cette robot!",{ 
-            duration: 2000
+            toast.error("il exist cette robot!", {
+              duration: 2000,
             });
           }
         }}
@@ -46,8 +48,10 @@ const Add = (props) => {
     </>
   );
 };
-const List = (props) => {
+const List = () => {
   const [filter, setfilter] = useState("");
+  const  props  = useContext(Valeurr);
+
   return (
     <>
       <p className="one">List of Robot Friends</p>
@@ -80,15 +84,26 @@ const List = (props) => {
   );
 };
 
+const Valeurr = createContext({
+  list: [],
+  setlist: function (list) {},
+});
 function App() {
   const [list, setlist] = useState([]);
   return (
     <>
-      <header>
-        <Add list={list} setlist={setlist} />
-        <List list={list} />
-      </header>
-      <Toaster />
+      <Valeurr.Provider
+        value={{
+          list: list,
+          setlist: setlist,
+        }}
+      >
+        <header>
+          <Add />
+          <List />
+        </header>
+        <Toaster />
+      </Valeurr.Provider>
     </>
   );
 }
