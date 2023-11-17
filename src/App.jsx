@@ -1,8 +1,13 @@
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
+import store from "./sotre";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { addlist } from "./slices/f";
 const Add = (props) => {
   const [input, setinput] = useState("");
+  const dispatch = useDispatch();
+
   return (
     <>
       <p className="one">Add New Friend</p>
@@ -23,20 +28,19 @@ const Add = (props) => {
         onClick={() => {
           if (!input) return;
 
-          const t = props.list.find((e) => e.name === input);
-
+          // const t  = props.list.find((e) => e.name === input);
+          let t = false;
           if (!t) {
-            props.setlist([
-              ...props.list,
-              {
+            dispatch(
+              addlist({
                 name: input,
                 img: "https://robohash.org/" + input,
-              },
-            ]);
+              })
+            );
           } else {
             // setTimeout(() => {},2000)
-            toast.error("il exist cette robot!",{ 
-            duration: 2000
+            toast.error("il exist cette robot!", {
+              duration: 2000,
             });
           }
         }}
@@ -46,8 +50,14 @@ const Add = (props) => {
     </>
   );
 };
-const List = (props) => {
+const List = () => {
   const [filter, setfilter] = useState("");
+  const store = useSelector((state) => state.listState);
+
+  const props = {
+    list: store.list,
+  };
+
   return (
     <>
       <p className="one">List of Robot Friends</p>
@@ -84,11 +94,13 @@ function App() {
   const [list, setlist] = useState([]);
   return (
     <>
-      <header>
-        <Add list={list} setlist={setlist} />
-        <List list={list} />
-      </header>
-      <Toaster />
+      <Provider store={store}>
+        <header>
+          <Add />
+          <List />
+        </header>
+        <Toaster />
+      </Provider>
     </>
   );
 }
